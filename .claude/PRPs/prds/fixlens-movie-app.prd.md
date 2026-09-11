@@ -123,7 +123,7 @@ Buka app → (onboarding 1x) → pilih "Find by Mood" → jawab 3 pertanyaan (~2
 | # | Phase | Description | Status | Parallel | Depends | PRP Plan |
 |---|-------|-------------|--------|----------|---------|----------|
 | 1 | Foundation | Scaffold Flutter, DI, router, theme, dotenv, analyze bersih, README skeleton | complete | - | - | plan: `.claude/PRPs/plans/completed/fixlens-foundation.plan.md`; report: `.claude/PRPs/reports/fixlens-foundation-report.md` |
-| 2 | Discovery+Detail | TMDB discover/search/detail/credits/videos/similar + trailer embed | pending | - | 1 | - |
+| 2 | Discovery+Detail | TMDB discover/search/detail/credits/videos/similar + trailer embed | in-progress | - | 1 | `.claude/PRPs/plans/fixlens-discovery-detail.plan.md` |
 | 3 | Mood+Watchlist (MVP gate) | Quiz 3Q + mapping + alasan + filter durasi + watchlist Hive + time-to-pick <60s | pending | - | 2 | - |
 | 4 | Backend-optional | Login + sync + review sosial (hanya jika MVP valid) | pending | with 5 | 3 | - |
 | 5 | iOS + polish | iOS build, icon/splash, release apk/aab, store listing | pending | with 4 | 3 | - |

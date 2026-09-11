@@ -55,8 +55,8 @@ class _TrailerPlayerState extends State<TrailerPlayer> {
   Widget build(BuildContext context) {
     final controller = _controller;
     if (controller == null) return _Fallback(backdropPath: widget.backdropPath);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+    return AspectRatio(
+      aspectRatio: 16 / 9,
       child: YoutubePlayer(controller: controller),
     );
   }

@@ -2,61 +2,136 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/result/app_result.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/app_empty.dart';
 import '../../../shared/widgets/app_error.dart';
 import '../../../shared/widgets/app_loading.dart';
 import '../../../shared/widgets/movie_card.dart';
+import '../../../shared/widgets/section_header.dart';
 import '../../discover/data/models/genre.dart';
 import '../../discover/presentation/providers.dart';
 
 /// Search tab: debounced text query, multi-genre chips, minimum rating,
 /// grid results with "load more".
-class SearchScreen extends ConsumerWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends ConsumerState<SearchScreen> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final search = ref.watch(searchProvider);
     final notifier = ref.read(searchProvider.notifier);
     final genresAsync = ref.watch(genresProvider);
+    // One-way sync for external resets (clear button). Typing flows
+    // controller -> provider with the same value echoed back (no-op).
+    if (_controller.text != search.query) {
+      _controller.value = TextEditingValue(
+        text: search.query,
+        selection: TextSelection.collapsed(offset: search.query.length),
+      );
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Search')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: SearchBar(
-              hintText: 'Cari judul film…',
-              leading: const Icon(Icons.search),
-              onChanged: notifier.setQuery,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Text(
+                'Search',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
             ),
-          ),
-          _GenreChips(genresAsync: genresAsync, selected: search.genres),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                const Text('Rating min'),
-                Expanded(
-                  child: Slider(
-                    value: search.minRating,
-                    max: 10,
-                    divisions: 20,
-                    label: search.minRating.toStringAsFixed(1),
-                    onChanged: notifier.setMinRating,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+              child: SearchBar(
+                controller: _controller,
+                hintText: 'Cari judul film…',
+                leading: const Icon(Icons.search),
+                trailing: search.query.isNotEmpty
+                    ? [
+                        IconButton(
+                          tooltip: 'Hapus pencarian',
+                          icon: const Icon(Icons.close, size: 20),
+                          onPressed: () {
+                            _controller.clear();
+                            notifier.setQuery('');
+                          },
+                        ),
+                      ]
+                    : null,
+                onChanged: notifier.setQuery,
+              ),
+            ),
+            _GenreChips(genresAsync: genresAsync, selected: search.genres),
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(AppRadii.lg),
+                border: Border.all(color: const Color(0xFF2A2A42)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.star,
+                    size: 18,
+                    color: AppColors.rating,
+                    semanticLabel: 'Rating minimal',
                   ),
-                ),
-                SizedBox(
-                  width: 32,
-                  child: Text(search.minRating.toStringAsFixed(1)),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  const Text('Rating min'),
+                  Expanded(
+                    child: Slider(
+                      value: search.minRating,
+                      max: 10,
+                      divisions: 20,
+                      label: search.minRating.toStringAsFixed(1),
+                      onChanged: notifier.setMinRating,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.rating.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(AppRadii.full),
+                    ),
+                    child: Text(
+                      search.minRating.toStringAsFixed(1),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: AppColors.rating,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Divider(height: 1),
-          Expanded(child: _Results(search: search)),
-        ],
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Divider(height: 1),
+            ),
+            Expanded(child: _Results(search: search)),
+          ],
+        ),
       ),
     );
   }
@@ -115,9 +190,10 @@ class _Results extends ConsumerWidget {
         return const AppEmpty(
           title: 'Cari film',
           subtitle: 'Ketik judul atau pilih genre dan rating di atas.',
+          icon: Icons.search_outlined,
         );
       case SearchStatus.loading:
-        return const AppLoading();
+        return const MovieGridSkeleton();
       case SearchStatus.error:
         return AppError(
           message: search.errorMessage ?? 'Gagal memuat.',
@@ -127,14 +203,21 @@ class _Results extends ConsumerWidget {
         return const AppEmpty(
           title: 'Tidak ketemu',
           subtitle: 'Coba kata kunci atau filter lain.',
+          icon: Icons.sentiment_dissatisfied_outlined,
         );
       case SearchStatus.data:
       case SearchStatus.loadingMore:
         return Column(
           children: [
+            SectionHeader(
+              title: 'Hasil',
+              subtitle:
+                  '${search.results.length} film${search.hasMore ? ' • masih ada lagi' : ''}',
+              count: search.results.length,
+            ),
             Expanded(
               child: GridView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 gridDelegate: movieGridDelegate,
                 itemCount: search.results.length,
                 itemBuilder: (context, i) =>
@@ -143,12 +226,21 @@ class _Results extends ConsumerWidget {
             ),
             if (search.hasMore)
               Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
                 child: search.status == SearchStatus.loadingMore
-                    ? const CircularProgressIndicator(strokeWidth: 2)
-                    : OutlinedButton(
-                        onPressed: notifier.loadMore,
-                        child: const Text('Muat lagi'),
+                    ? const SizedBox(
+                        height: 48,
+                        child: Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: notifier.loadMore,
+                          icon: const Icon(Icons.expand_more, size: 20),
+                          label: const Text('Muat lagi'),
+                        ),
                       ),
               ),
           ],

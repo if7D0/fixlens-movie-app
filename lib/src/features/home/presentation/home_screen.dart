@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/result/app_result.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/app_empty.dart';
 import '../../../shared/widgets/app_error.dart';
 import '../../../shared/widgets/app_loading.dart';
+import '../../../shared/widgets/mood_cta_card.dart';
 import '../../../shared/widgets/movie_card.dart';
 import '../../discover/data/models/movie.dart';
 import '../../discover/presentation/providers.dart';
@@ -17,59 +19,92 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('FixLens')),
-      body: ListView(
-        children: [
-          if (!AppConfig.isConfigured)
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Text(
-                    'Demo mode — TMDB key belum dikonfigurasi. '
-                    'Lihat README untuk cara menambahkannya.',
-                  ),
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              floating: true,
+              snap: false,
+              pinned: false,
+              backgroundColor: AppColors.background,
+              expandedHeight: 76,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                title: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.moodGradient,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.movie_filter,
+                        color: Colors.white,
+                        size: 22,
+                        semanticLabel: 'Logo FixLens',
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'FixLens',
+                          style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        Text(
+                          'Mau nonton apa malam ini?',
+                          style: textTheme.bodySmall?.copyWith(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Card(
-              child: ListTile(
-                leading: const Text('🍿', style: TextStyle(fontSize: 28)),
-                title: const Text('Find by Mood'),
-                subtitle: const Text('3 pertanyaan, 3 rekomendasi < 1 menit'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push('/mood'),
-              ),
+            if (!AppConfig.isConfigured)
+              const SliverToBoxAdapter(child: DemoBanner()),
+            SliverToBoxAdapter(
+              child: MoodCtaCard(onTap: () => context.push('/mood')),
             ),
-          ),
-          _Section(
-            title: 'Trending minggu ini',
-            result: ref.watch(trendingProvider),
-            onRetry: () => ref.invalidate(trendingProvider),
-          ),
-          _Section(
-            title: 'Populer',
-            result: ref.watch(popularProvider),
-            onRetry: () => ref.invalidate(popularProvider),
-          ),
-          const SizedBox(height: 16),
-        ],
+            _SectionSliver(
+              title: 'Trending minggu ini',
+              subtitle: 'Paling ramai dibicarakan',
+              result: ref.watch(trendingProvider),
+              onRetry: () => ref.invalidate(trendingProvider),
+            ),
+            _SectionSliver(
+              title: 'Populer',
+              subtitle: 'Favorit penonton Indonesia',
+              result: ref.watch(popularProvider),
+              onRetry: () => ref.invalidate(popularProvider),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _Section extends StatelessWidget {
+class _SectionSliver extends StatelessWidget {
   final String title;
+  final String? subtitle;
   final AsyncValue<AppResult<List<MovieSummary>>> result;
   final VoidCallback onRetry;
 
-  const _Section({
+  const _SectionSliver({
     required this.title,
+    this.subtitle,
     required this.result,
     required this.onRetry,
   });
@@ -78,30 +113,42 @@ class _Section extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (result) {
       AsyncData(value: AppOk(data: final movies)) => movies.isEmpty
-          ? AppEmpty(title: title, subtitle: 'Belum ada data.')
-          : MovieRail(title: title, movies: movies),
-      AsyncData(value: AppErr(message: final m)) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-        child: SizedBox(
-          height: 220,
-          child: SingleChildScrollView(
-            child: AppError(message: m, onRetry: onRetry),
-          ),
-        ),
-      ),
-      AsyncError(:final error) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-        child: SizedBox(
-          height: 220,
-          child: SingleChildScrollView(
-            child: AppError(
-              message: 'Gagal memuat $title: $error',
-              onRetry: onRetry,
+          ? SliverToBoxAdapter(
+              child: AppEmpty(title: title, subtitle: 'Belum ada data.'),
+            )
+          : SliverToBoxAdapter(
+              child: MovieRail(
+                title: title,
+                subtitle: subtitle,
+                movies: movies,
+              ),
+            ),
+      AsyncData(value: AppErr(message: final m)) => SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: SizedBox(
+            height: 220,
+            child: SingleChildScrollView(
+              child: AppError(message: m, onRetry: onRetry),
             ),
           ),
         ),
       ),
-      _ => const SizedBox(height: 200, child: AppLoading()),
+      AsyncError(:final error) => SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: SizedBox(
+            height: 220,
+            child: SingleChildScrollView(
+              child: AppError(
+                message: 'Gagal memuat $title: $error',
+                onRetry: onRetry,
+              ),
+            ),
+          ),
+        ),
+      ),
+      _ => SliverToBoxAdapter(child: MovieRailSkeleton(title: title)),
     };
   }
 }

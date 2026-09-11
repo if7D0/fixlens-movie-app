@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/backend/firebase_bootstrap.dart';
 import '../../../core/result/app_result.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/section_header.dart';
 import '../../account/presentation/account_provider.dart';
 import '../data/models/review.dart';
 import 'review_sheet.dart';
@@ -20,9 +22,14 @@ class ReviewSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ready = ref.watch(firebaseReadyProvider);
     if (!ready) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Text('Ulasan membutuhkan koneksi backend.'),
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: Text(
+          'Ulasan membutuhkan koneksi backend.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.mutedText),
+        ),
       );
     }
 
@@ -34,36 +41,16 @@ class ReviewSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Row(
-            children: [
-              Text(
-                'Ulasan',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(width: 8),
+        SectionHeader(
+          title: 'Ulasan',
+          subtitle: 'Dari penonton buat penonton',
+          actionLabel:
               switch (summary) {
-                AsyncData(value: AppOk(data: final s)) => s.count > 0
-                    ? Chip(
-                        label: Text(
-                          '★ ${s.avg.toStringAsFixed(1)} (${s.count})',
-                        ),
-                        visualDensity: VisualDensity.compact,
-                      )
-                    : const Chip(
-                        label: Text('Belum ada ulasan'),
-                        visualDensity: VisualDensity.compact,
-                      ),
-                AsyncData(value: AppErr()) => const SizedBox.shrink(),
-                _ => const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                AsyncData(value: AppOk(data: final s)) when s.count > 0 =>
+                  '★ ${s.avg.toStringAsFixed(1)} (${s.count})',
+                AsyncData(value: AppOk()) => 'Baru',
+                _ => null,
               },
-            ],
-          ),
         ),
         switch (list) {
           AsyncData(value: AppOk(data: final reviews)) =>
@@ -93,20 +80,25 @@ class ReviewSection extends ConsumerWidget {
           ),
         },
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          child: uid == null
-              ? OutlinedButton(
-                  onPressed: () => context.push('/profile'),
-                  child: const Text('Login untuk menulis ulasan'),
-                )
-              : OutlinedButton(
-                  onPressed: () => showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (_) => ReviewSheet(movieId: movieId, uid: uid),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: SizedBox(
+            width: double.infinity,
+            child: uid == null
+                ? OutlinedButton.icon(
+                    onPressed: () => context.push('/profile'),
+                    icon: const Icon(Icons.login, size: 20),
+                    label: const Text('Login untuk menulis ulasan'),
+                  )
+                : FilledButton.icon(
+                    onPressed: () => showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => ReviewSheet(movieId: movieId, uid: uid),
+                    ),
+                    icon: const Icon(Icons.rate_review_outlined, size: 20),
+                    label: const Text('Tulis ulasan'),
                   ),
-                  child: const Text('Tulis ulasan'),
-                ),
+          ),
         ),
       ],
     );

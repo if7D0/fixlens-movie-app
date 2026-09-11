@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../shared/widgets/app_empty.dart';
 import '../../../shared/widgets/movie_card.dart';
+import '../../../shared/widgets/section_header.dart';
 import 'watchlist_provider.dart';
 
 /// Watchlist tab: persistent grid with swipe-to-remove + undo.
@@ -16,18 +18,48 @@ class WatchlistScreen extends ConsumerWidget {
 
     if (watchlist.items.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Watchlist')),
-        body: const AppEmpty(
-          title: 'Watchlist kosong',
-          subtitle: 'Simpan film dari halaman detail atau hasil quiz.',
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Text(
+                  'Watchlist',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              Expanded(
+                child: AppEmpty(
+                  title: 'Watchlist kosong',
+                  subtitle:
+                      'Simpan film dari halaman detail atau hasil quiz, '
+                      'semuanya tersimpan otomatis di HP.',
+                  icon: Icons.bookmark_outline,
+                  actionLabel: 'Cari film',
+                  onAction: () => context.go('/search'),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Watchlist (${watchlist.items.length})')),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SectionHeader(
+              title: 'Watchlist',
+              subtitle: 'Geser kartu ke samping untuk menghapus',
+              count: watchlist.items.length,
+            ),
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         gridDelegate: movieGridDelegate,
         itemCount: watchlist.items.length,
         itemBuilder: (context, i) {
@@ -59,6 +91,10 @@ class WatchlistScreen extends ConsumerWidget {
             child: MovieCard(movie: movie),
           );
         },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -55,10 +55,7 @@ final GoRouter appRouter = GoRouter(
                     label: 'Search',
                   ),
                   NavigationDestination(
-                    icon: _WatchlistIcon(
-                      count: savedCount,
-                      selected: false,
-                    ),
+                    icon: _WatchlistIcon(count: savedCount, selected: false),
                     selectedIcon: _WatchlistIcon(
                       count: savedCount,
                       selected: true,
@@ -111,10 +108,7 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ),
-    GoRoute(
-      path: '/mood',
-      builder: (context, state) => const MoodQuizScreen(),
-    ),
+    GoRoute(path: '/mood', builder: (context, state) => const MoodQuizScreen()),
     GoRoute(
       path: '/mood/result',
       builder: (context, state) => const MoodResultScreen(),

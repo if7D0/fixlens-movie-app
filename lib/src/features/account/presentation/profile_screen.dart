@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/backend/firebase_bootstrap.dart';
 import '../../../core/result/app_result.dart';
+import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/app_empty.dart';
 import '../../../shared/widgets/app_error.dart';
 import '../../../shared/widgets/app_loading.dart';
@@ -22,11 +23,27 @@ class ProfileScreen extends ConsumerWidget {
     final ready = ref.watch(firebaseReadyProvider);
     if (!ready) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Profil')),
-        body: const AppEmpty(
-          title: 'Mode lokal',
-          subtitle: 'Backend tidak tersedia di build ini. '
-              'Watchlist tersimpan lokal di HP.',
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Text(
+                  'Profil',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+              const Expanded(
+                child: AppEmpty(
+                  title: 'Mode lokal',
+                  subtitle: 'Backend tidak tersedia di build ini. '
+                      'Watchlist tersimpan lokal di HP.',
+                  icon: Icons.smartphone_outlined,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -37,95 +54,194 @@ class ProfileScreen extends ConsumerWidget {
     final user = account.user;
 
     if (account.status == AccountStatus.signingIn) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Profil')),
-        body: const AppLoading(),
-      );
+      return const Scaffold(body: SafeArea(child: AppLoading(message: 'Login…')));
     }
 
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Profil')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.account_circle_outlined, size: 72),
-                const SizedBox(height: 12),
-                const Text(
-                  'Login untuk sinkronisasi dan ulasan. '
-                  'Tanpa login, aplikasi tetap jalan lokal.',
-                  textAlign: TextAlign.center,
-                ),
-                if (account.errorMessage != null) ...[
-                  const SizedBox(height: 8),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.moodGradient,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(2),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: AppColors.card,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.account_circle_outlined,
+                        size: 56,
+                        color: Color(0xFFA5B4FC),
+                        semanticLabel: 'Ikon profil',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   Text(
-                    account.errorMessage!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                    'Simpan & sinkron di mana saja',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Login untuk sinkronisasi dan ulasan. '
+                    'Tanpa login, aplikasi tetap jalan lokal.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.mutedText,
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  if (account.errorMessage != null) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      account.errorMessage!,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () =>
+                          ref.read(accountProvider.notifier).signIn(),
+                      icon: const Icon(Icons.login, size: 20),
+                      label: const Text('Login dengan Google'),
+                    ),
+                  ),
                 ],
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () =>
-                      ref.read(accountProvider.notifier).signIn(),
-                  child: const Text('Login dengan Google'),
-                ),
-              ],
+              ),
             ),
           ),
         ),
       );
     }
 
+    final savedCount = ref.watch(
+      watchlistProvider.select((s) => s.ids.length),
+    );
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundImage: user.photoUrl != null
-                  ? NetworkImage(user.photoUrl!)
-                  : null,
-              child: user.photoUrl == null
-                  ? const Icon(Icons.person)
-                  : null,
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          children: [
+            Text('Profil', style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: AppColors.moodGradient,
+                borderRadius: BorderRadius.circular(AppRadii.xl),
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    backgroundImage: user.photoUrl != null
+                        ? NetworkImage(user.photoUrl!)
+                        : null,
+                    child: user.photoUrl == null
+                        ? const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 32,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.displayName ?? 'Pengguna',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          user.email ?? '',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Colors.white.withValues(alpha: 0.85),
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(AppRadii.full),
+                          ),
+                          child: Text(
+                            '$savedCount film tersimpan',
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            title: Text(user.displayName ?? 'Pengguna'),
-            subtitle: Text(user.email ?? ''),
-            contentPadding: EdgeInsets.zero,
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => _syncNow(context, ref, user.uid),
-                  child: const Text('Sinkronkan watchlist'),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () => _syncNow(context, ref, user.uid),
+                    icon: const Icon(Icons.sync, size: 20),
+                    label: const Text('Sinkronkan'),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () =>
-                      ref.read(accountProvider.notifier).signOut(),
-                  child: const Text('Logout'),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () =>
+                        ref.read(accountProvider.notifier).signOut(),
+                    icon: const Icon(Icons.logout, size: 20),
+                    label: const Text('Logout'),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Ulasan saya',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          _MyReviews(uid: user.uid),
-        ],
+              ],
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Ulasan saya',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            _MyReviews(uid: user.uid),
+          ],
+        ),
       ),
     );
   }

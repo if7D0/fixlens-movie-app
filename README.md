@@ -111,7 +111,8 @@ flutter test      # harus: All tests passed!
 
 ## Batasan saat ini
 
-- Target: **Android** (iOS menyusul Fase 5). Web/Windows **tidak didukung**
+- Target: **Android saja** (iOS dibatalkan — owner tidak ada Mac).
+  Web/Windows **tidak didukung**
   (`youtube_player_flutter`/`sqflite` tidak andal di sana).
 - Fase 1 = scaffold + infra saja: data TMDB, quiz, dan watchlist hadir di
   Fase 2-3.

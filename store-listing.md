@@ -1,7 +1,9 @@
 # FixLens — Store Listing Draft (v1.0.0)
 
-> Status: DRAF. Belum publish (butuh akun Play Console + upload-key).
-> Screenshot + feature graphic menyusul dari device (lihat checklist).
+> Status: DIARSIPKAN. Distribusi GitHub-only (keputusan owner):
+> tanpa Play publish, tanpa screenshot, tanpa iOS.
+> Dokumen ini disimpan sebagai referensi teks (judul + deskripsi) bila
+> suatu hari berubah pikiran.
 
 ## Title (≤30 char)
 
@@ -38,12 +40,11 @@ mood — not the same trending list everywhere.
 
 Movie data by TMDB. Free, no ads.
 
-## Assets needed
+## Assets needed — DITIADAKAN (GitHub-only, keputusan owner)
 
-- [ ] 2-8 screenshots HP (ambil via tombol screenshot saat quiz, hasil,
-      detail, watchlist) — target 1080×2400
-- [ ] Feature graphic 1024×500 (butuh desain owner)
-- [ ] Ikon: DONE (`assets/icon/app_icon.png` → adaptive + iOS)
+Sengaja tidak dibuat: screenshot device, feature graphic.
+
+## Data safety (arsip bila suatu hari publish)
 
 ## Data safety (panduan isi form Play)
 
@@ -59,9 +60,7 @@ Movie data by TMDB. Free, no ads.
 - "This product uses the TMDB API but is not endorsed or certified by TMDB."
   (sudah di README; tempel juga di deskripsi store bila ada kolom khusus)
 
-## iOS handoff (butuh Mac — BELUM tested)
+## iOS — DIBATALKAN (owner: tidak ada Mac)
 
-- [ ] Di Mac: `flutter build ipa` (bundle `com.fixlens.fixlens_movie_app`)
-- [ ] Ikon sudah ter-generate (`ios:true`); verifikasi AppIcon di Xcode
-- [ ] `GoogleService-Info.plist` via `flutterfire configure` (platform ios)
-- [ ] Display name sudah "FixLens" (`Info.plist`)
+Folder `ios/` tetap ada agar struktur Flutter utuh, tapi tidak ada rencana
+build/uji/rilis iOS. Abaikan bagian ini kecuali keputusan berubah.

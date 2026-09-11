@@ -124,4 +124,3 @@ flutter test      # harus: All tests passed!
 | `Android license status unknown`                  | `flutter doctor --android-licenses`, terima semua                      |
 | Build Gradle gagal `Unsupported class file major` | AGP butuh JDK 17: set `org.gradle.java.home` ke JDK 17                |
 | Banner "Demo mode"                                | Normal tanpa token — tambah key sesuai langkah di atas                 |
-| `flutter create` menolak dir non-kosong           | Pindahkan `.claude/` sementara, run create, kembalikan                 |

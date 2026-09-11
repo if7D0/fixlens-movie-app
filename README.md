@@ -1,6 +1,6 @@
 # FixLens Movie App
 
-Rekomendasi film berbasis mood — bukan sekadar trending. Jawab 3 pertanyaan
+Rekomendasi film berbasis mood tidak sekadar film yang trending saja. Jawab 3 pertanyaan
 singkat, dapat 3 rekomendasi yang cocok dalam <1 menit.
 
 > This product uses the TMDB API but is not endorsed or certified by TMDB.

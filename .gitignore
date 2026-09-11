@@ -18,6 +18,8 @@ migrate_working_dir/
 /android/key.properties
 /android/*.jks
 /android/*.keystore
+# Gradle build reports (generated noise)
+/android/build/
 
 # IntelliJ related
 *.iml

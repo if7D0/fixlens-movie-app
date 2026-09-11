@@ -26,10 +26,18 @@ class AppUser {
   );
 }
 
+/// Auth contract (abstract for test fakes; production = Firebase below).
+abstract class AuthRepository {
+  Stream<AppUser?> authChanges();
+  AppUser? get currentUser;
+  Future<AppResult<AppUser>> signInWithGoogle();
+  Future<void> signOut();
+}
+
 /// Google Sign-In via google_sign_in 7.x API (singleton + initialize +
 /// authenticate; no signIn()/accessToken — removed upstream).
-class AuthRepository {
-  AuthRepository({FirebaseAuth? auth, GoogleSignIn? googleSignIn})
+class FirebaseAuthRepository implements AuthRepository {
+  FirebaseAuthRepository({FirebaseAuth? auth, GoogleSignIn? googleSignIn})
     : _auth = auth ?? FirebaseAuth.instance,
       _google = googleSignIn ?? GoogleSignIn.instance;
 
@@ -37,14 +45,17 @@ class AuthRepository {
   final GoogleSignIn _google;
   bool _googleInitialized = false;
 
+  @override
   Stream<AppUser?> authChanges() =>
       _auth.authStateChanges().map((u) => u == null ? null : AppUser.fromFirebase(u));
 
+  @override
   AppUser? get currentUser {
     final u = _auth.currentUser;
     return u == null ? null : AppUser.fromFirebase(u);
   }
 
+  @override
   Future<AppResult<AppUser>> signInWithGoogle() async {
     try {
       if (!_googleInitialized) {
@@ -81,6 +92,7 @@ class AuthRepository {
     }
   }
 
+  @override
   Future<void> signOut() async {
     try {
       await _google.signOut();

@@ -30,30 +30,8 @@ class ProfileScreen extends ConsumerWidget {
       );
     }
 
-    // Auto-sync once right after login (no account->watchlist import cycle:
-    // the UI layer owns this trigger).
-    ref.listen<AccountState>(accountProvider, (prev, next) async {
-      final user = next.user;
-      if (prev?.user?.uid == null &&
-          next.status == AccountStatus.signedIn &&
-          user != null) {
-        final res = await ref
-            .read(watchlistProvider.notifier)
-            .syncFromCloud(user.uid);
-        if (!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              switch (res) {
-                AppOk(data: final m) => m,
-                AppErr(message: final m) => m,
-              },
-            ),
-          ),
-        );
-      }
-    });
-
+    // Auto-sync on login is owned by WatchlistNotifier (survives tab
+    // switches); here only the manual button lives.
     final account = ref.watch(accountProvider);
     final user = account.user;
 

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:fixlens_movie_app/src/core/backend/firebase_bootstrap.dart';
@@ -91,8 +90,7 @@ void main() {
 
   test('login transition triggers cloud sync even off-profile', () async {
     final (container, auth, sync) = await makeContainer();
-    auth
-      ..nextSignIn = const AppOk<AppUser>(_user);
+    auth.nextSignIn = const AppOk<AppUser>(_user);
 
     await container.read(accountProvider.notifier).signIn();
     await Future<void>.delayed(const Duration(milliseconds: 100));

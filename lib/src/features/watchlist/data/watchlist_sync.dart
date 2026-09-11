@@ -30,9 +30,20 @@ Map<int, SyncedEntry> mergeWatchlists({
   return merged;
 }
 
+/// Sync contract (abstract for test fakes; production = Firestore below).
+abstract class WatchlistSync {
+  Future<AppResult<List<MovieSummary>>> syncOnLogin(
+    String uid,
+    List<MovieSummary> localItems,
+    Map<int, int> localUpdatedAtMs,
+  );
+
+  Future<void> pushToggle(String uid, MovieSummary movie, bool saved);
+}
+
 /// Hive <-> Firestore sync. All failures are logged, never thrown.
-class WatchlistSyncService {
-  WatchlistSyncService(this._db);
+class FirestoreWatchlistSync implements WatchlistSync {
+  FirestoreWatchlistSync(this._db);
 
   final FirebaseFirestore _db;
 
@@ -41,6 +52,7 @@ class WatchlistSyncService {
 
   /// Pull remote, union-merge with [localItems], write winners back to
   /// both sides. Returns merged list (newest first).
+  @override
   Future<AppResult<List<MovieSummary>>> syncOnLogin(
     String uid,
     List<MovieSummary> localItems,
@@ -88,6 +100,7 @@ class WatchlistSyncService {
   }
 
   /// Push a single toggle. Fire-and-forget from UI (errors logged only).
+  @override
   Future<void> pushToggle(
     String uid,
     MovieSummary movie,
@@ -113,6 +126,6 @@ final firestoreProvider = Provider<FirebaseFirestore>(
   (_) => throw UnimplementedError('Override firestoreProvider'),
 );
 
-final watchlistSyncProvider = Provider<WatchlistSyncService>(
-  (ref) => WatchlistSyncService(ref.watch(firestoreProvider)),
+final watchlistSyncProvider = Provider<WatchlistSync>(
+  (ref) => FirestoreWatchlistSync(ref.watch(firestoreProvider)),
 );

@@ -29,6 +29,15 @@ class WatchlistNotifier extends Notifier<WatchlistState> {
 
   @override
   WatchlistState build() {
+    // Auto-sync on login transitions. Owned here (not ProfileScreen) so it
+    // survives tab switches; the nav badge keeps this provider alive.
+    // No import cycle: account never imports watchlist.
+    ref.listen<AccountState>(accountProvider, (prev, next) async {
+      final uid = next.user?.uid;
+      if (prev?.user?.uid == null && uid != null) {
+        await syncFromCloud(uid);
+      }
+    });
     try {
       final items = _repo.items();
       return WatchlistState(

@@ -26,7 +26,7 @@ Future<void> main() async {
       overrides: [
         watchlistBoxProvider.overrideWithValue(watchlistBox),
         firebaseReadyProvider.overrideWithValue(firebaseReady),
-        authRepositoryProvider.overrideWithValue(AuthRepository()),
+        authRepositoryProvider.overrideWithValue(FirebaseAuthRepository()),
         if (firebaseReady)
           firestoreProvider.overrideWithValue(FirebaseFirestore.instance),
       ],

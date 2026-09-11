@@ -13,14 +13,28 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(isOptional: true);
   await Hive.initFlutter();
-  final watchlistBox = await Hive.openBox('watchlist');
+  final watchlistBox = await _openWatchlistBox();
   appLog('bootstrap complete');
   runApp(
     ProviderScope(
-      overrides: [
-        watchlistBoxProvider.overrideWithValue(watchlistBox),
-      ],
+      overrides: [watchlistBoxProvider.overrideWithValue(watchlistBox)],
       child: const FixLensApp(),
     ),
   );
+}
+
+/// Opens the watchlist box, resetting it if corrupt so the app can always
+/// launch (local data loss beats a dead-on-arrival install).
+Future<Box> _openWatchlistBox() async {
+  try {
+    return await Hive.openBox('watchlist');
+  } catch (e) {
+    appLog('watchlist box corrupt, resetting: $e');
+    try {
+      await Hive.deleteBoxFromDisk('watchlist');
+    } catch (_) {
+      // Best effort: reopen below will surface a fresh error if any.
+    }
+    return Hive.openBox('watchlist');
+  }
 }

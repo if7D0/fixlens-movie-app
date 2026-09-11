@@ -24,7 +24,10 @@ class _MoodQuizScreenState extends ConsumerState<MoodQuizScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(quizProvider.notifier).restart();
+    // Deferred: Riverpod forbids modifying providers during initState.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(quizProvider.notifier).restart();
+    });
   }
 
   @override

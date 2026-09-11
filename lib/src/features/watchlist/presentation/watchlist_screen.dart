@@ -28,12 +28,7 @@ class WatchlistScreen extends ConsumerWidget {
       appBar: AppBar(title: Text('Watchlist (${watchlist.items.length})')),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.48,
-        ),
+        gridDelegate: movieGridDelegate,
         itemCount: watchlist.items.length,
         itemBuilder: (context, i) {
           final movie = watchlist.items[i];

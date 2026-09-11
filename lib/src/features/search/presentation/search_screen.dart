@@ -135,15 +135,7 @@ class _Results extends ConsumerWidget {
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.all(16),
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      // Card content ≈ 216h at ~108w: keep headroom for
-                      // 2-line titles and larger font scales.
-                      childAspectRatio: 0.48,
-                    ),
+                gridDelegate: movieGridDelegate,
                 itemCount: search.results.length,
                 itemBuilder: (context, i) =>
                     MovieCard(movie: search.results[i]),

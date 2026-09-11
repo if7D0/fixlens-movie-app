@@ -5,6 +5,19 @@ import 'package:go_router/go_router.dart';
 import '../../core/network/tmdb_image.dart';
 import '../../features/discover/data/models/movie.dart';
 
+/// Shared 3-column poster grid delegate for Search and Watchlist grids.
+///
+/// Single source so card sizing stays in sync: card content ≈ 216h at
+/// ~108w, with headroom for 2-line titles and larger font scales.
+const movieGridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+  crossAxisCount: 3,
+  mainAxisSpacing: 12,
+  crossAxisSpacing: 12,
+  // Card content ≈ 216h at ~108w: keep headroom for
+  // 2-line titles and larger font scales.
+  childAspectRatio: 0.48,
+);
+
 /// Poster card shared by Home rails, Search grid, and Detail similar rail.
 /// Parent controls width: fixed 120 in rails, expanded in grids.
 class MovieCard extends StatelessWidget {

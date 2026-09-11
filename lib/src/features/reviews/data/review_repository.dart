@@ -31,6 +31,11 @@ class ReviewRepository {
     try {
       final summaryRef = _summaryRef(movieId);
       final myRef = _itemsRef(movieId).doc(uid);
+      final myIndexRef = _db
+          .collection('users')
+          .doc(uid)
+          .collection('my_reviews')
+          .doc('$movieId');
       await _db.runTransaction((tx) async {
         final summarySnap = await tx.get(summaryRef);
         final mySnap = await tx.get(myRef);
@@ -46,13 +51,15 @@ class ReviewRepository {
           newRating: rating,
         );
         tx.set(summaryRef, next.toJson());
-        tx.set(myRef, Review(
+        final payload = Review(
           uid: uid,
           displayName: displayName.isEmpty ? 'Anonim' : displayName,
           rating: rating,
           text: Review.sanitizeText(text),
           updatedAtMs: DateTime.now().millisecondsSinceEpoch,
-        ).toJson());
+        ).toJson();
+        tx.set(myRef, payload);
+        tx.set(myIndexRef, payload);
       });
       return const AppOk(null);
     } on FirebaseException catch (e) {
@@ -71,6 +78,11 @@ class ReviewRepository {
     try {
       final summaryRef = _summaryRef(movieId);
       final myRef = _itemsRef(movieId).doc(uid);
+      final myIndexRef = _db
+          .collection('users')
+          .doc(uid)
+          .collection('my_reviews')
+          .doc('$movieId');
       await _db.runTransaction((tx) async {
         final summarySnap = await tx.get(summaryRef);
         final mySnap = await tx.get(myRef);
@@ -85,6 +97,7 @@ class ReviewRepository {
         );
         tx.set(summaryRef, next.toJson());
         tx.delete(myRef);
+        tx.delete(myIndexRef);
       });
       return const AppOk(null);
     } on FirebaseException catch (e) {
@@ -146,27 +159,30 @@ class ReviewRepository {
     }
   }
 
-  /// All reviews by one user (single-field where: no composite index).
-  /// Sorted newest-first client-side.
+  /// All reviews by one user. Plain single-collection read under the
+  /// user's own tree (owner rules, automatic indexes — no collection group,
+  /// no console index steps on fresh projects). Sorted newest-first.
   Future<AppResult<List<OwnedReview>>> myReviews(
     String uid, {
     int limit = 20,
   }) async {
     try {
       final snap = await _db
-          .collectionGroup('reviews')
-          .where('uid', isEqualTo: uid)
+          .collection('users')
+          .doc(uid)
+          .collection('my_reviews')
           .limit(limit)
           .get();
       final out = <OwnedReview>[];
       for (final d in snap.docs) {
-        final movieId = int.tryParse(d.reference.parent.parent?.id ?? '');
+        final movieId = int.tryParse(d.id);
         if (movieId == null) continue;
-        out.add(OwnedReview(movieId: movieId, review: Review.fromJson(d.id, d.data())));
+        out.add(OwnedReview(movieId: movieId, review: Review.fromJson(uid, d.data())));
       }
       out.sort((a, b) => b.review.updatedAtMs.compareTo(a.review.updatedAtMs));
       return AppOk(out);
     } on FirebaseException catch (e) {
+      appLog('myReviews failed: code=${e.code} message=${e.message}');
       return AppErr(_friendly(e.code));
     } catch (e) {
       return const AppErr('Gagal memuat ulasanmu.');

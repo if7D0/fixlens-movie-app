@@ -7,13 +7,20 @@ singkat, dapat 3 rekomendasi yang cocok dalam <1 menit.
 
 ## Status fase
 
-| #   | Fase                 | Status      |
-| --- | -------------------- | ----------- |
-| 1   | Foundation           | in-progress |
-| 2   | Discovery + Detail   | pending     |
-| 3   | Mood + Watchlist MVP | pending     |
-| 4   | Backend (opsional)   | pending     |
-| 5   | iOS + polish         | pending     |
+| #   | Fase                 | Status   |
+| --- | -------------------- | -------- |
+| 1   | Foundation           | complete |
+| 2   | Discovery + Detail   | complete |
+| 3   | Mood + Watchlist MVP | pending  |
+| 4   | Backend (opsional)   | pending  |
+| 5   | iOS + polish         | pending  |
+
+## Mode demo
+
+Tanpa TMDB key aplikasi tetap jalan: banner "Demo mode" tampil di Home dan
+setiap section data menampilkan pesan yang sama. Tidak ada request jaringan
+yang dikirim dan tidak ada crash — tambah key sesuai langkah di bawah untuk
+data live (rail Trending/Populer, search + filter, detail + trailer).
 
 ## Prasyarat
 

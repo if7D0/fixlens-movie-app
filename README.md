@@ -78,6 +78,30 @@ Untuk project sendiri: ulangi langkah di atas (timpa kedua file itu).
 Keterbatasan v1: hapus watchlist saat offline lalu login bisa memunculkan
 kembali item (tanpa tombstone).
 
+## Install versi rilis (tanpa build sendiri)
+
+Ambil `app-release.apk` dari hasil build (lihat bawah) atau GitHub Release
+`v1.0.0`, salin ke HP, tap untuk install (izinkan "install unknown apps").
+Versi rilis memakai kunci TMDB yang di-bake saat build + project Firebase
+demo — langsung jalan penuh.
+
+## Build rilis sendiri
+
+```powershell
+# WAJIB sertakan key, kalau tidak rilis jalan mode demo:
+flutter build apk --release --dart-define=TMDB_READ_TOKEN=token_anda
+flutter build appbundle --release --dart-define=TMDB_READ_TOKEN=token_anda
+```
+
+APK rilis default memakai debug-signing (cukup untuk berbagi via GitHub,
+TIDAK untuk Play Store). Untuk AAB Play Store: salin
+`android/key.properties.example` menjadi `android/key.properties` (jangan
+commit!), buat upload-keystore via keytool, lalu build ulang. Backup `.jks`
+di luar repo — hilang = tak bisa update app selamanya.
+
+iOS: butuh Mac — `flutter build ipa` (ikon + display name sudah disiapkan,
+belum tested). Lihat `store-listing.md` untuk draf listing + checklist.
+
 ## Perintah validasi
 
 ```powershell

@@ -126,7 +126,7 @@ Buka app → (onboarding 1x) → pilih "Find by Mood" → jawab 3 pertanyaan (~2
 | 2 | Discovery+Detail | TMDB discover/search/detail/credits/videos/similar + trailer embed | complete | - | 1 | plan: `.claude/PRPs/plans/completed/fixlens-discovery-detail.plan.md`; report: `.claude/PRPs/reports/fixlens-discovery-detail-report.md` |
 | 3 | Mood+Watchlist (MVP gate) | Quiz 3Q + mapping + alasan + filter durasi + watchlist Hive + time-to-pick <60s | complete | - | 2 | plan: `.claude/PRPs/plans/completed/fixlens-mood-watchlist.plan.md`; report: `.claude/PRPs/reports/fixlens-mood-watchlist-report.md` |
 | 4 | Backend-optional | Login + sync + review sosial (hanya jika MVP valid) | complete | with 5 | 3 | plan: `.claude/PRPs/plans/completed/fixlens-backend-firebase.plan.md`; report: `.claude/PRPs/reports/fixlens-backend-report.md` |
-| 5 | iOS + polish | iOS build, icon/splash, release apk/aab, store listing | pending | with 4 | 3 | - |
+| 5 | iOS + polish | iOS build, icon/splash, release apk/aab, store listing | complete | with 4 | 3 | plan: `.claude/PRPs/plans/completed/fixlens-release-polish.plan.md`; report: `.claude/PRPs/reports/fixlens-release-report.md` |
 
 ### Phase Details
 

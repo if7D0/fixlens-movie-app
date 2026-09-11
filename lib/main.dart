@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
@@ -15,24 +16,29 @@ import 'src/features/watchlist/presentation/watchlist_provider.dart';
 /// Bootstrap order is contractual: dotenv -> Hive (+open box) -> Firebase
 /// (guarded) -> ProviderScope (with overrides) -> runApp.
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(isOptional: true);
-  await Hive.initFlutter();
-  final watchlistBox = await _openWatchlistBox();
-  final firebaseReady = await initFirebase();
-  appLog('bootstrap complete');
-  runApp(
-    ProviderScope(
-      overrides: [
-        watchlistBoxProvider.overrideWithValue(watchlistBox),
-        firebaseReadyProvider.overrideWithValue(firebaseReady),
-        authRepositoryProvider.overrideWithValue(FirebaseAuthRepository()),
-        if (firebaseReady)
-          firestoreProvider.overrideWithValue(FirebaseFirestore.instance),
-      ],
-      child: const FixLensApp(),
-    ),
-  );
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  try {
+    await dotenv.load(isOptional: true);
+    await Hive.initFlutter();
+    final watchlistBox = await _openWatchlistBox();
+    final firebaseReady = await initFirebase();
+    appLog('bootstrap complete');
+    runApp(
+      ProviderScope(
+        overrides: [
+          watchlistBoxProvider.overrideWithValue(watchlistBox),
+          firebaseReadyProvider.overrideWithValue(firebaseReady),
+          authRepositoryProvider.overrideWithValue(FirebaseAuthRepository()),
+          if (firebaseReady)
+            firestoreProvider.overrideWithValue(FirebaseFirestore.instance),
+        ],
+        child: const FixLensApp(),
+      ),
+    );
+  } finally {
+    FlutterNativeSplash.remove();
+  }
 }
 
 /// Opens the watchlist box, resetting it if corrupt so the app can always

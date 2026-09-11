@@ -1,0 +1,8 @@
+# Upload keystore credentials (NEVER commit this file).
+# Generate once with:
+#   keytool -genkeypair -v -keystore upload-keystore.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
+# Then back the .jks up OUTSIDE the repo (losing it = no more Play updates).
+storePassword=ganti-dengan-password
+keyPassword=ganti-dengan-password
+keyAlias=upload
+storeFile=upload-keystore.jks

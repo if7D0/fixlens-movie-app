@@ -7,6 +7,7 @@ import '../../../core/result/app_result.dart';
 import '../../../shared/widgets/app_empty.dart';
 import '../../../shared/widgets/app_error.dart';
 import '../../../shared/widgets/app_loading.dart';
+import '../../reviews/data/models/review.dart';
 import '../../reviews/presentation/reviews_provider.dart';
 import '../../watchlist/presentation/watchlist_provider.dart';
 import 'account_provider.dart';
@@ -178,7 +179,17 @@ class _MyReviews extends ConsumerWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                    trailing: const Icon(Icons.chevron_right),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () =>
+                              _deleteReview(context, ref, uid, item),
+                        ),
+                        const Icon(Icons.chevron_right),
+                      ],
+                    ),
                     onTap: () => context.push('/movie/${item.movieId}'),
                   ),
               ],
@@ -189,5 +200,42 @@ class _MyReviews extends ConsumerWidget {
       ),
       _ => const AppLoading(),
     };
+  }
+}
+
+/// Deletes one history entry with undo (re-upserts the same content).
+Future<void> _deleteReview(
+  BuildContext context,
+  WidgetRef ref,
+  String uid,
+  OwnedReview item,
+) async {
+  final res = await ref
+      .read(reviewRepositoryProvider)
+      .deleteMyReview(movieId: item.movieId, uid: uid);
+  ref.invalidate(myReviewsProvider(uid));
+  if (!context.mounted) return;
+  switch (res) {
+    case AppOk():
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Ulasan dihapus'),
+          action: SnackBarAction(
+            label: 'Urungkan',
+            onPressed: () async {
+              await ref.read(reviewRepositoryProvider).upsertReview(
+                movieId: item.movieId,
+                uid: uid,
+                displayName: item.review.displayName,
+                rating: item.review.rating,
+                text: item.review.text,
+              );
+              ref.invalidate(myReviewsProvider(uid));
+            },
+          ),
+        ),
+      );
+    case AppErr(message: final m):
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
   }
 }

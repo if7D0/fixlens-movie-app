@@ -55,6 +55,29 @@ dikonfigurasi. Tidak ada langkah wajib lain.
    - atau salin `.env.example` menjadi `.env` lalu isi `TMDB_READ_TOKEN`.
 3. Jangan pernah commit file `.env` (sudah ada di `.gitignore`).
 
+## Backend Firebase (opsional)
+
+Tanpa setup ini aplikasi 100% lokal (tab Profil menjelaskan mode lokal).
+Dengan setup ini: login Google, sync watchlist, rating + ulasan publik.
+
+1. Buat project di [Firebase console](https://console.firebase.google.com/)
+2. Authentication → Sign-in method → aktifkan **Google**
+3. Project settings → tambah app **Android**: package
+   `com.fixlens.fixlens_movie_app` + SHA-1 debug:
+   `keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey`
+   (storepass/keypass `android`)
+4. `dart pub global activate flutterfire_cli`
+5. `flutterfire configure` (pilih project + Android)
+6. Firestore Database → Create database → production mode
+7. Deploy rules: `firebase deploy --only firestore:rules`
+8. `flutter run` → tab Profil → Login dengan Google
+
+Repo ini menyertakan config project demo (`lib/firebase_options.dart`,
+`android/app/google-services.json` — bukan secret) agar clone langsung jalan.
+Untuk project sendiri: ulangi langkah di atas (timpa kedua file itu).
+Keterbatasan v1: hapus watchlist saat offline lalu login bisa memunculkan
+kembali item (tanpa tombstone).
+
 ## Perintah validasi
 
 ```powershell

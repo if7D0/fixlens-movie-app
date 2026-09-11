@@ -9,6 +9,7 @@ import '../../../shared/widgets/app_empty.dart';
 import '../../../shared/widgets/app_error.dart';
 import '../../../shared/widgets/app_loading.dart';
 import '../../../shared/widgets/movie_card.dart';
+import '../../reviews/presentation/review_section.dart';
 import '../../watchlist/presentation/watchlist_provider.dart';
 import '../data/models/movie_detail.dart';
 import 'detail_provider.dart';
@@ -258,6 +259,7 @@ class _Body extends StatelessWidget {
                 subtitle: 'Belum ada rekomendasi untuk film ini.',
               ),
             ),
+          ReviewSection(movieId: detail.id),
           const SizedBox(height: 24),
         ],
       ),

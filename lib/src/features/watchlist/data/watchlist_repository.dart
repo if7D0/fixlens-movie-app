@@ -35,6 +35,26 @@ class WatchlistRepository {
 
   bool contains(int id) => _box.containsKey(_key(id));
 
+  /// id -> updatedAt millis from savedAt ISO (0 when missing/corrupt).
+  Map<int, int> updatedAtMs() {
+    final out = <int, int>{};
+    for (final k in _box.keys) {
+      try {
+        if (k is! String || !k.startsWith('m_')) continue;
+        final id = int.tryParse(k.substring(2));
+        final v = _box.get(k);
+        if (id == null || v is! Map) continue;
+        final ms = DateTime.tryParse(
+          '${v['savedAt']}',
+        )?.millisecondsSinceEpoch;
+        out[id] = ms ?? 0;
+      } catch (e) {
+        appLog('watchlist ts skip $k: $e');
+      }
+    }
+    return out;
+  }
+
   Future<void> save(MovieSummary movie) {
     return _box.put(_key(movie.id), {
       ...movie.toJson(),

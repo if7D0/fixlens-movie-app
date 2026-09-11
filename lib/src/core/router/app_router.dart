@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/detail/presentation/detail_screen.dart';
+import '../../features/account/presentation/profile_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/mood/presentation/mood_quiz_screen.dart';
 import '../../features/mood/presentation/mood_result_screen.dart';
@@ -10,9 +11,8 @@ import '../../features/search/presentation/search_screen.dart';
 import '../../features/watchlist/presentation/watchlist_provider.dart';
 import '../../features/watchlist/presentation/watchlist_screen.dart';
 
-/// App router (locked Phase 1). Bottom nav uses indexed-stack shell so tab
-/// state is preserved. Detail lives outside the shell.
-/// Watchlist tab icon with a count badge (hidden when empty).
+/// App router. Bottom nav uses indexed-stack shell so tab
+/// state is preserved. Detail/mood live outside the shell.
 class _WatchlistIcon extends StatelessWidget {
   final int count;
   final bool selected;
@@ -65,6 +65,11 @@ final GoRouter appRouter = GoRouter(
                     ),
                     label: 'Watchlist',
                   ),
+                  const NavigationDestination(
+                    icon: Icon(Icons.person_outlined),
+                    selectedIcon: Icon(Icons.person),
+                    label: 'Profil',
+                  ),
                 ],
               );
             },
@@ -93,6 +98,14 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: '/watchlist',
               builder: (context, state) => const WatchlistScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileScreen(),
             ),
           ],
         ),

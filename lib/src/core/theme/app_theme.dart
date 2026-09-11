@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 
-/// FixLens cinematic OLED design system (ui-ux-pro-max verified).
+/// FixLens monochrome OLED system (matches black/white brand mark).
 ///
-/// - Style: `dark-mode-oled` + cinematic layered depth
-/// - Palette: deep bg `#0B0B14`, card `#1B1B30`, muted `#27273B`,
-///   muted-text `#9AA3B2`, brand violet `#6C4CF1`, mood CTA `#F97316`,
-///   rating amber `#FBBF24`
-/// - Type: display-bold (Righteous role) + body-medium (Poppins role)
-///   mapped onto system weights so no extra font dependency is needed.
+/// - Style: `dark-mode-oled`: deep black `#000000`, surfaces `#121212`,
+///   text white `#FFFFFF` / muted `#9AA3B2` (7:1+ on black)
+/// - Single neutral accent: white (buttons light, text dark). Semantic
+///   error-red / success-green kept (function, not brand).
 /// - Rhythm: 4/8dp spacing, 12/14/16/20 radii, 48dp min touch targets.
 abstract final class AppTheme {
-  static const _seed = Color(0xFF6C4CF1);
+  static const _seed = Color(0xFFFFFFFF);
 
   static ThemeData get dark {
     var scheme = ColorScheme.fromSeed(
@@ -18,20 +16,20 @@ abstract final class AppTheme {
       brightness: Brightness.dark,
     );
     scheme = scheme.copyWith(
-      primary: const Color(0xFF8B7CFF),
-      onPrimary: Colors.white,
-      secondary: const Color(0xFFA5B4FC),
-      onSecondary: const Color(0xFF0F0F23),
+      primary: Colors.white,
+      onPrimary: Colors.black,
+      secondary: const Color(0xFFD4D4D4),
+      onSecondary: Colors.black,
       tertiary: AppColors.accent,
-      onTertiary: const Color(0xFF0F0F23),
+      onTertiary: Colors.black,
       surface: AppColors.background,
       onSurface: const Color(0xFFF8FAFC),
-      surfaceContainerLowest: const Color(0xFF08080F),
-      surfaceContainerLow: const Color(0xFF12121E),
+      surfaceContainerLowest: const Color(0xFF000000),
+      surfaceContainerLow: const Color(0xFF0A0A0A),
       surfaceContainer: AppColors.card,
       surfaceContainerHigh: AppColors.muted,
-      surfaceContainerHighest: const Color(0xFF2E2E48),
-      outlineVariant: const Color(0xFF34344E),
+      surfaceContainerHighest: const Color(0xFF262626),
+      outlineVariant: const Color(0xFF333333),
       error: const Color(0xFFEF4444),
     );
 
@@ -66,7 +64,7 @@ abstract final class AppTheme {
         color: scheme.onSurface,
       ),
       bodyMedium: base.textTheme.bodyMedium?.copyWith(
-        color: const Color(0xFFD6DBE5),
+        color: const Color(0xFFE5E5E5),
       ),
       bodySmall: base.textTheme.bodySmall?.copyWith(
         color: AppColors.mutedText,
@@ -94,7 +92,7 @@ abstract final class AppTheme {
         iconTheme: const IconThemeData(color: Color(0xFFF8FAFC)),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: const Color(0xFF12121E),
+        backgroundColor: const Color(0xFF0A0A0A),
         indicatorColor: _seed.withValues(alpha: 0.30),
         labelTextStyle: WidgetStatePropertyAll(
           text.labelSmall?.copyWith(fontWeight: FontWeight.w600),
@@ -112,7 +110,7 @@ abstract final class AppTheme {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadii.lg),
-          side: const BorderSide(color: Color(0xFF2A2A42)),
+          side: const BorderSide(color: Color(0xFF2A2A2A)),
         ),
       ),
       chipTheme: base.chipTheme.copyWith(
@@ -127,13 +125,13 @@ abstract final class AppTheme {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadii.full),
-          side: const BorderSide(color: Color(0xFF34344E)),
+          side: const BorderSide(color: Color(0xFF333333)),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: _seed,
-          foregroundColor: Colors.white,
+          foregroundColor: Colors.black,
           minimumSize: const Size(48, 48),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
@@ -144,7 +142,7 @@ abstract final class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.accent,
-          foregroundColor: const Color(0xFF0F0F23),
+          foregroundColor: Colors.black,
           minimumSize: const Size(48, 48),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
           shape: RoundedRectangleBorder(
@@ -156,7 +154,7 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: const Color(0xFFF8FAFC),
           minimumSize: const Size(48, 48),
-          side: const BorderSide(color: Color(0xFF4A4A68)),
+          side: const BorderSide(color: Color(0xFF3D3D3D)),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadii.md),
@@ -165,7 +163,7 @@ abstract final class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: const Color(0xFFA5B4FC),
+          foregroundColor: Colors.white,
           minimumSize: const Size(48, 44),
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -177,7 +175,7 @@ abstract final class AppTheme {
         backgroundColor: const WidgetStatePropertyAll(AppColors.card),
         elevation: const WidgetStatePropertyAll(0),
         side: const WidgetStatePropertyAll(
-          BorderSide(color: Color(0xFF2A2A42)),
+          BorderSide(color: Color(0xFF2A2A2A)),
         ),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
@@ -194,7 +192,7 @@ abstract final class AppTheme {
         inactiveTrackColor: AppColors.muted,
         valueIndicatorColor: AppColors.accent,
         valueIndicatorTextStyle: const TextStyle(
-          color: Color(0xFF0F0F23),
+          color: Colors.black,
           fontWeight: FontWeight.w700,
         ),
       ),
@@ -203,7 +201,7 @@ abstract final class AppTheme {
         linearTrackColor: AppColors.muted,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: const Color(0xFF23233A),
+        backgroundColor: const Color(0xFF242424),
         contentTextStyle: text.bodyMedium?.copyWith(color: Colors.white),
         actionTextColor: AppColors.accent,
         behavior: SnackBarBehavior.floating,
@@ -212,7 +210,7 @@ abstract final class AppTheme {
         ),
       ),
       dividerTheme: const DividerThemeData(
-        color: Color(0xFF23233A),
+        color: Color(0xFF242424),
         thickness: 1,
         space: 1,
       ),
@@ -224,50 +222,49 @@ abstract final class AppTheme {
         iconColor: AppColors.mutedText,
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: Color(0xFF151522),
+        backgroundColor: Color(0xFF141414),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         showDragHandle: true,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: const Color(0xFF151522),
+        backgroundColor: const Color(0xFF141414),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),
       ),
       badgeTheme: const BadgeThemeData(
         backgroundColor: AppColors.accent,
-        textColor: Color(0xFF0F0F23),
+        textColor: Colors.black,
       ),
     );
   }
 }
 
-/// Semantic color tokens. Always read via `Theme.of(context).colorScheme`
-/// first; use these only for brand moments the scheme cannot express
-/// (rating amber, mood CTA gradient, cinematic scrims).
+/// Semantic color tokens. Monochrome brand: black surfaces, white actions.
+/// Semantic error-red / success-green kept (function, not brand).
 abstract final class AppColors {
-  static const background = Color(0xFF0B0B14);
-  static const card = Color(0xFF1B1B30);
-  static const muted = Color(0xFF27273B);
+  static const background = Color(0xFF000000);
+  static const card = Color(0xFF121212);
+  static const muted = Color(0xFF1E1E1E);
   static const mutedText = Color(0xFF9AA3B2);
-  static const accent = Color(0xFFF97316);
-  static const accentDeep = Color(0xFFEA580C);
-  static const rating = Color(0xFFFBBF24);
+  static const accent = Color(0xFFFFFFFF);
+  static const accentDeep = Color(0xFFD9D9D9);
+  static const rating = Color(0xFFFFFFFF);
   static const success = Color(0xFF22C55E);
-  static const brandViolet = Color(0xFF6C4CF1);
-  static const brandVioletLight = Color(0xFF8B7CFF);
+  static const brandViolet = Color(0xFFFFFFFF);
+  static const brandVioletLight = Color(0xFFE8E8E8);
 
   static const moodGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF6C4CF1), Color(0xFF9333EA), Color(0xFFF97316)],
+    colors: [Color(0xFF2E2E2E), Color(0xFF101010)],
   );
   static const heroScrim = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Colors.transparent, Color(0xCC0B0B14), Color(0xFF0B0B14)],
+    colors: [Colors.transparent, Color(0xCC000000), Color(0xFF000000)],
   );
   static const cardScrim = LinearGradient(
     begin: Alignment.topCenter,

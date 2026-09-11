@@ -35,17 +35,13 @@ class HomeScreen extends ConsumerWidget {
                 titlePadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 title: Row(
                   children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.moodGradient,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.movie_filter,
-                        color: Colors.white,
-                        size: 22,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/splash/logo.png',
+                        width: 36,
+                        height: 36,
+                        fit: BoxFit.cover,
                         semanticLabel: 'Logo FixLens',
                       ),
                     ),

@@ -47,12 +47,28 @@ class MovieRepository {
     double minRating = 0,
     int page = 1,
     String sortBy = 'popularity.desc',
+    int? voteCountGte,
+    int? runtimeLte,
+    int? runtimeGte,
+    String? releaseDateLte,
   }) async {
     final query = <String, dynamic>{'sort_by': sortBy, 'page': '$page'};
     if (genreIds.isNotEmpty) {
       query['with_genres'] = genreIds.join(',');
     }
     if (minRating > 0) query['vote_average.gte'] = '$minRating';
+    if (voteCountGte != null && voteCountGte > 0) {
+      query['vote_count.gte'] = '$voteCountGte';
+    }
+    if (runtimeLte != null && runtimeLte > 0) {
+      query['with_runtime.lte'] = '$runtimeLte';
+    }
+    if (runtimeGte != null && runtimeGte > 0) {
+      query['with_runtime.gte'] = '$runtimeGte';
+    }
+    if (releaseDateLte != null && releaseDateLte.isNotEmpty) {
+      query['primary_release_date.lte'] = releaseDateLte;
+    }
     final res = await _client.getJson('/discover/movie', query: query);
     return _moviePage(res);
   }

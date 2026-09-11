@@ -11,7 +11,13 @@ singkat, dapat 3 rekomendasi yang cocok dalam <1 menit.
 | --- | -------------------- | -------- |
 | 1   | Foundation           | complete |
 | 2   | Discovery + Detail   | complete |
-| 3   | Mood + Watchlist MVP | pending  |
+| 3   | Mood + Watchlist MVP | complete |
+
+## Cara pakai quiz
+
+Tap kartu "Find by Mood" di Home → jawab 3 pertanyaan (mood, teman nonton,
+durasi) → 3 rekomendasi tampil beserta alasan. Tap film untuk detail, ikon
+bookmark untuk simpan ke watchlist.
 | 4   | Backend (opsional)   | pending  |
 | 5   | iOS + polish         | pending  |
 

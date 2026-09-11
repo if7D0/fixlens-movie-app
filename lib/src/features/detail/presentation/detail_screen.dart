@@ -9,6 +9,7 @@ import '../../../shared/widgets/app_empty.dart';
 import '../../../shared/widgets/app_error.dart';
 import '../../../shared/widgets/app_loading.dart';
 import '../../../shared/widgets/movie_card.dart';
+import '../../watchlist/presentation/watchlist_provider.dart';
 import '../data/models/movie_detail.dart';
 import 'detail_provider.dart';
 import 'widgets/trailer_player.dart';
@@ -33,19 +34,69 @@ class DetailScreen extends ConsumerWidget {
       );
     }
     final async = ref.watch(detailProvider(id));
-    return Scaffold(
-      appBar: AppBar(title: const Text('Detail')),
-      body: switch (async) {
-        AsyncData(value: AppOk(data: final d)) => _Body(detail: d),
-        AsyncData(value: AppErr(message: final m)) => AppError(
+    return switch (async) {
+      AsyncData(value: AppOk(data: final d)) => Scaffold(
+        appBar: AppBar(
+          title: Text(d.title),
+          actions: [_BookmarkAction(detail: d)],
+        ),
+        body: _Body(detail: d),
+      ),
+      AsyncData(value: AppErr(message: final m)) => Scaffold(
+        appBar: AppBar(),
+        body: AppError(
           message: m,
           onRetry: () => ref.invalidate(detailProvider(id)),
         ),
-        AsyncError(:final error) => AppError(
+      ),
+      AsyncError(:final error) => Scaffold(
+        appBar: AppBar(),
+        body: AppError(
           message: 'Gagal memuat detail: $error',
           onRetry: () => ref.invalidate(detailProvider(id)),
         ),
-        _ => const AppLoading(),
+      ),
+      _ => Scaffold(
+        appBar: AppBar(),
+        body: const AppLoading(),
+      ),
+    };
+  }
+}
+
+class _BookmarkAction extends ConsumerWidget {
+  final MovieDetail detail;
+
+  const _BookmarkAction({required this.detail});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final saved = ref.watch(
+      watchlistProvider.select((s) => s.ids.contains(detail.id)),
+    );
+    return IconButton(
+      icon: Icon(saved ? Icons.bookmark : Icons.bookmark_outline),
+      onPressed: () async {
+        final summary = detail.toSummary();
+        final nowSaved = await ref
+            .read(watchlistProvider.notifier)
+            .toggle(summary);
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              nowSaved ? 'Ditambah ke watchlist' : 'Dihapus dari watchlist',
+            ),
+            action: nowSaved
+                ? null
+                : SnackBarAction(
+                    label: 'Urungkan',
+                    onPressed: () => ref
+                        .read(watchlistProvider.notifier)
+                        .add(summary),
+                  ),
+          ),
+        );
       },
     );
   }

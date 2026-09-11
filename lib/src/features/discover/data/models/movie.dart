@@ -42,6 +42,18 @@ class MovieSummary {
     );
   }
 
+  /// Serializes for Hive watchlist persistence (JSON maps, no codegen).
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'poster_path': posterPath,
+    'backdrop_path': backdropPath,
+    'overview': overview,
+    'release_date': releaseDate,
+    'vote_average': voteAverage,
+    'genre_ids': genreIds,
+  };
+
   /// Release year (yyyy) or '-' when unknown.
   String get year =>
       releaseDate.length >= 4 ? releaseDate.substring(0, 4) : '-';

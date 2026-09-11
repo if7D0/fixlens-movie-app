@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/result/app_result.dart';
@@ -33,6 +34,18 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Card(
+              child: ListTile(
+                leading: const Text('🍿', style: TextStyle(fontSize: 28)),
+                title: const Text('Find by Mood'),
+                subtitle: const Text('3 pertanyaan, 3 rekomendasi < 1 menit'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/mood'),
+              ),
+            ),
+          ),
           _Section(
             title: 'Trending minggu ini',
             result: ref.watch(trendingProvider),

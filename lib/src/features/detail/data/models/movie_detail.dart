@@ -93,4 +93,17 @@ class MovieDetail {
 
   String get runtimeLabel =>
       runtimeMinutes > 0 ? '$runtimeMinutes mnt' : '-';
+
+  /// Lightweight summary for watchlist persistence (genre ids unavailable
+  /// here; watchlist display only needs poster/title).
+  MovieSummary toSummary() => MovieSummary(
+    id: id,
+    title: title,
+    posterPath: posterPath,
+    backdropPath: backdropPath,
+    overview: overview,
+    releaseDate: releaseDate,
+    voteAverage: voteAverage,
+    genreIds: const [],
+  );
 }

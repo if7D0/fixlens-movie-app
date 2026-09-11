@@ -39,6 +39,9 @@ dependencies:
   flutter_dotenv: ^6.0.1
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
+  dio: ^5.11.1
+  cached_network_image: ^4.0.0
+  youtube_player_flutter: ^10.0.1
 
 dev_dependencies:
   flutter_test:

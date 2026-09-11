@@ -71,6 +71,14 @@ class FakeReviewRepository implements ReviewRepository {
     required int movieId,
     required String uid,
   }) => throw UnimplementedError();
+
+  @override
+  Stream<AppResult<ReviewSummary>> watchSummary(int movieId) =>
+      throw UnimplementedError();
+
+  @override
+  Stream<AppResult<List<Review>>> watchRecent(int movieId, {int limit = 20}) =>
+      throw UnimplementedError();
 }
 
 const _me = AppUser(

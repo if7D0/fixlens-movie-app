@@ -109,8 +109,35 @@ class ReviewRepository {
     }
   }
 
-  Future<AppResult<ReviewSummary>> summary(int movieId) async {
-    try {
+  /// Realtime summary stream (badge stays live without manual refresh).
+  Stream<AppResult<ReviewSummary>> watchSummary(int movieId) {
+    return _summaryRef(movieId).snapshots().map((snap) {
+      if (!snap.exists || snap.data() == null) {
+        return const AppOk(ReviewSummary());
+      }
+      try {
+        return AppOk(ReviewSummary.fromJson(snap.data()!));
+      } catch (e) {
+        appLog('summary parse failed: $e');
+        return const AppErr('Gagal memuat ringkasan.');
+      }
+    });
+  }
+
+  /// Realtime recent-reviews stream.
+  Stream<AppResult<List<Review>>> watchRecent(int movieId, {int limit = 20}) {
+    return _itemsRef(movieId)
+        .orderBy('updatedAt', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map(
+          (snap) => AppOk([
+            for (final d in snap.docs) Review.fromJson(d.id, d.data()),
+          ]),
+        );
+  }
+
+  Future<AppResult<ReviewSummary>> summary(int movieId) async {    try {
       final snap = await _summaryRef(movieId).get();
       if (!snap.exists || snap.data() == null) {
         return const AppOk(ReviewSummary());

@@ -78,13 +78,6 @@ Untuk project sendiri: ulangi langkah di atas (timpa kedua file itu).
 Keterbatasan v1: hapus watchlist saat offline lalu login bisa memunculkan
 kembali item (tanpa tombstone).
 
-## Install versi rilis (tanpa build sendiri)
-
-Ambil `app-release.apk` dari hasil build (lihat bawah) atau GitHub Release
-`v1.0.0`, salin ke HP, tap untuk install (izinkan "install unknown apps").
-Versi rilis memakai kunci TMDB yang di-bake saat build + project Firebase
-demo — langsung jalan penuh.
-
 ## Build rilis sendiri
 
 ```powershell
